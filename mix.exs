@@ -1,9 +1,9 @@
 defmodule RedixPool.Mixfile do
   use Mix.Project
 
-  @version "0.2.0"
+  @version "0.3.0"
   @description "Simple Redis pooling built on redix and poolboy"
-  @github_url "https://github.com/opendoor-labs/redix_pool"
+  @github_url "https://github.com/pathpub/redix_pool"
 
   def project do
     [app: :redix_pool,
@@ -17,7 +17,7 @@ defmodule RedixPool.Mixfile do
   end
 
   def package do
-    [maintainers: ["Connor Jacobsen"],
+    [maintainers: ["jimmybot", "mdg"],
      homepage_url: @github_url,
      licenses: ["MIT"],
      links: %{"Github" => @github_url},
