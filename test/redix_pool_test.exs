@@ -26,25 +26,25 @@ defmodule RedixPoolTest do
   end
 
   test "basic pipeline method" do
-    assert Redix.pipeline([["SET", "foo", "bar"],
-                           ["SET", "baz", "bat"]]) == {:ok, ["OK", "OK"]}
+    assert Redix.pipeline([["SET", "foo", "bar"], ["SET", "baz", "bat"]]) == {:ok, ["OK", "OK"]}
     assert Redix.command(["GET", "foo"]) == {:ok, "bar"}
     assert Redix.command(["GET", "baz"]) == {:ok, "bat"}
 
-    assert Redix.pipeline([["HSET", "foobar", "foo", "bar"],
-                           ["HSET", "foobar", "baz", "bat"]]) == {:ok, [1, 1]}
+    assert Redix.pipeline([["HSET", "foobar", "foo", "bar"], ["HSET", "foobar", "baz", "bat"]]) ==
+             {:ok, [1, 1]}
+
     assert Redix.command(["HGET", "foobar", "foo"]) == {:ok, "bar"}
     assert Redix.command(["HGET", "foobar", "baz"]) == {:ok, "bat"}
   end
 
   test "basic pipeline! method" do
-    assert Redix.pipeline!([["SET", "foo", "bar"],
-                            ["SET", "baz", "bat"]]) == ["OK", "OK"]
+    assert Redix.pipeline!([["SET", "foo", "bar"], ["SET", "baz", "bat"]]) == ["OK", "OK"]
     assert Redix.command(["GET", "foo"]) == {:ok, "bar"}
     assert Redix.command(["GET", "baz"]) == {:ok, "bat"}
 
-    assert Redix.pipeline!([["HSET", "foobar", "foo", "bar"],
-                            ["HSET", "foobar", "baz", "bat"]]) == [1, 1]
+    assert Redix.pipeline!([["HSET", "foobar", "foo", "bar"], ["HSET", "foobar", "baz", "bat"]]) ==
+             [1, 1]
+
     assert Redix.command(["HGET", "foobar", "foo"]) == {:ok, "bar"}
     assert Redix.command(["HGET", "foobar", "baz"]) == {:ok, "bat"}
   end

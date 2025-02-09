@@ -6,22 +6,26 @@ defmodule RedixPool.Mixfile do
   @github_url "https://github.com/pathpub/redix_pool"
 
   def project do
-    [app: :redix_pool,
-     version: @version,
-     description: @description,
-     package: package(),
-     elixir: "~> 1.6",
-     build_embedded: Mix.env == :prod,
-     start_permanent: Mix.env == :prod,
-     deps: deps()]
+    [
+      app: :redix_pool,
+      version: @version,
+      description: @description,
+      package: package(),
+      elixir: "~> 1.6",
+      build_embedded: Mix.env() == :prod,
+      start_permanent: Mix.env() == :prod,
+      deps: deps(),
+    ]
   end
 
   def package do
-    [maintainers: ["jimmybot", "mdg"],
-     homepage_url: @github_url,
-     licenses: ["MIT"],
-     links: %{"Github" => @github_url},
-     source_url: @github_url]
+    [
+      maintainers: ["jimmybot", "mdg"],
+      homepage_url: @github_url,
+      licenses: ["MIT"],
+      links: %{"Github" => @github_url},
+      source_url: @github_url,
+    ]
   end
 
   # Configuration for the OTP application
@@ -29,8 +33,7 @@ defmodule RedixPool.Mixfile do
   # Type "mix help compile.app" for more information
   def application do
     # Specify extra applications you'll use from Erlang/Elixir
-    [extra_applications: [:logger],
-     mod: {RedixPool, []}]
+    [extra_applications: [:logger], mod: {RedixPool, []}]
   end
 
   # Dependencies can be Hex packages:
@@ -43,8 +46,11 @@ defmodule RedixPool.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    [{:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
-     {:redix, "~> 1.5"},
-     {:poolboy, "~> 1.5"}]
+    [
+      {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
+      {:freedom_formatter, "~> 2.1", only: :dev, runtime: false},
+      {:redix, "~> 1.5"},
+      {:poolboy, "~> 1.5"},
+    ]
   end
 end

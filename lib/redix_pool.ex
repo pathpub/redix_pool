@@ -23,11 +23,11 @@ defmodule RedixPool do
       name: {:local, @pool_name},
       worker_module: RedixPool.Worker,
       size: @size,
-      max_overflow: @max_overflow
+      max_overflow: @max_overflow,
     ]
 
     children = [
-      :poolboy.child_spec(@pool_name, pool_options, [])
+      :poolboy.child_spec(@pool_name, pool_options, []),
     ]
 
     opts = [strategy: :one_for_one, name: RedixPool.Supervisor]
