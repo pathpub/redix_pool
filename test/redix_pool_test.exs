@@ -4,6 +4,15 @@ defmodule RedixPoolTest do
 
   alias RedixPool, as: Redix
 
+  setup_all do
+    children = [
+      RedixPool,
+    ]
+
+    Supervisor.start_link(children, strategy: :one_for_one)
+    :ok
+  end
+
   setup do
     Redix.command(["FLUSHDB"])
     :ok

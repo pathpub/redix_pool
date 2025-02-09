@@ -11,27 +11,34 @@ defmodule RedixPool do
   more in-depth documentation. Many of the examples in this documentation are
   pulled directly from the `Redix` docs.
   """
-  use Application
+  use Supervisor
   use RedixPool.Config
 
   @type command :: [binary]
 
-  def start(_type, _args) do
-    import Supervisor.Spec, warn: false
+  def start_link(init_arg) do
+    Supervisor.start_link(__MODULE__, init_arg, name: __MODULE__)
+  end
 
-    pool_options = [
-      name: {:local, @pool_name},
-      worker_module: RedixPool.Worker,
-      size: @size,
-      max_overflow: @max_overflow,
-    ]
+  @impl true
+  def init(init_arg) do
+    pool_options =
+      Keyword.merge(
+        [
+          name: {:local, @pool_name},
+          worker_module: RedixPool.Worker,
+          size: @size,
+          max_overflow: @max_overflow,
+        ],
+        init_arg
+      )
 
     children = [
       :poolboy.child_spec(@pool_name, pool_options, []),
     ]
 
     opts = [strategy: :one_for_one, name: RedixPool.Supervisor]
-    Supervisor.start_link(children, opts)
+    Supervisor.init(children, opts)
   end
 
   @doc """

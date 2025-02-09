@@ -4,7 +4,7 @@ defmodule RedixPool.Worker do
 
   ## Client API
 
-  def start_link(_) do
+  def start_link(_a) do
     GenServer.start_link(__MODULE__, %{conn: nil}, [])
   end
 
@@ -26,7 +26,9 @@ defmodule RedixPool.Worker do
   end
 
   defp connect do
-    {:ok, conn} = Redix.start_link(@redis_url)
+    {:ok, conn} =
+      Redix.start_link(host: @host, port: @port, password: @password)
+
     conn
   end
 end
