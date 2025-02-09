@@ -12,12 +12,9 @@ defmodule RedixPool do
   pulled directly from the `Redix` docs.
   """
   use Application
-
-  alias RedixPool.Config
+  use RedixPool.Config
 
   @type command :: [binary]
-
-  @pool_name :redix_pool
 
   def start(_type, _args) do
     import Supervisor.Spec, warn: false
@@ -25,8 +22,8 @@ defmodule RedixPool do
     pool_options = [
       name: {:local, @pool_name},
       worker_module: RedixPool.Worker,
-      size: Config.get(:pool_size, 10),
-      max_overflow: Config.get(:pool_max_overflow, 1)
+      size: @size,
+      max_overflow: @max_overflow
     ]
 
     children = [
@@ -37,7 +34,7 @@ defmodule RedixPool do
     Supervisor.start_link(children, opts)
   end
 
-  @doc"""
+  @doc """
   Wrapper to call `Redix.command/3` inside a poolboy worker.
 
   ## Examples
@@ -47,17 +44,17 @@ defmodule RedixPool do
       iex> RedixPool.command(["GET", "k"])
       {:ok, "foo"}
   """
-  @spec command(command, Keyword.t) ::
-        {:ok, Redix.Protocol.redis_value} | {:error, atom | Redix.Error.t}
+  @spec command(command, Keyword.t()) ::
+          {:ok, Redix.Protocol.redis_value()} | {:error, atom | Redix.Error.t()}
   def command(args, opts \\ []) do
     :poolboy.transaction(
       @pool_name,
-      fn(worker) -> GenServer.call(worker, {:command, args, opts}) end,
-      RedixPool.Config.get(:timeout, 5000)
+      fn worker -> GenServer.call(worker, {:command, args, opts}) end,
+      @timeout
     )
   end
 
-  @doc"""
+  @doc """
   Wrapper to call `Redix.command!/3` inside a poolboy worker, raising if
   there's an error.
 
@@ -68,16 +65,16 @@ defmodule RedixPool do
       iex> RedixPool.command!(["GET", "k"])
       "foo"
   """
-  @spec command!(command, Keyword.t) :: Redix.Protocol.redis_value | no_return
+  @spec command!(command, Keyword.t()) :: Redix.Protocol.redis_value() | no_return
   def command!(args, opts \\ []) do
     :poolboy.transaction(
       @pool_name,
-      fn(worker) -> GenServer.call(worker, {:command!, args, opts}) end,
-      Config.get(:timeout, 5000)
+      fn worker -> GenServer.call(worker, {:command!, args, opts}) end,
+      @timeout
     )
   end
 
-  @doc"""
+  @doc """
   Wrapper to call `Redix.pipeline/3` inside a poolboy worker.
 
   ## Examples
@@ -88,17 +85,17 @@ defmodule RedixPool do
       iex> RedixPool.pipeline([["SET", "k", "foo"], ["INCR", "k"], ["GET", "k"]])
       {:ok, ["OK", %Redix.Error{message: "ERR value is not an integer or out of range"}, "foo"]}
   """
-  @spec pipeline([command], Keyword.t) ::
-        {:ok, [Redix.Protocol.redis_value]} | {:error, atom}
+  @spec pipeline([command], Keyword.t()) ::
+          {:ok, [Redix.Protocol.redis_value()]} | {:error, atom}
   def pipeline(args, opts \\ []) do
     :poolboy.transaction(
       @pool_name,
-      fn(worker) -> GenServer.call(worker, {:pipeline, args, opts}) end,
-      Config.get(:timeout, 5000)
+      fn worker -> GenServer.call(worker, {:pipeline, args, opts}) end,
+      @timeout
     )
   end
 
-  @doc"""
+  @doc """
   Wrapper to call `Redix.pipeline!/3` inside a poolboy worker, raising if there
   are errors issuing the commands (but not if the commands are successfully
   issued and result in errors).
@@ -111,12 +108,12 @@ defmodule RedixPool do
       iex> RedixPool.pipeline!([["SET", "k", "foo"], ["INCR", "k"], ["GET", "k"]])
       ["OK", %Redix.Error{message: "ERR value is not an integer or out of range"}, "foo"]
   """
-  @spec pipeline!([command], Keyword.t) :: [Redix.Protocol.redis_value] | no_return
+  @spec pipeline!([command], Keyword.t()) :: [Redix.Protocol.redis_value()] | no_return
   def pipeline!(args, opts \\ []) do
     :poolboy.transaction(
       @pool_name,
-      fn(worker) -> GenServer.call(worker, {:pipeline!, args, opts}) end,
-      RedixPool.Config.get(:timeout, 5000)
+      fn worker -> GenServer.call(worker, {:pipeline!, args, opts}) end,
+      @timeout
     )
   end
 end

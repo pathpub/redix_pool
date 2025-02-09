@@ -1,14 +1,11 @@
 defmodule RedixPool.Config do
-  @doc false
-  def get(key, default \\ nil) do
-    :redix_pool
-    |> Application.get_env(key, default)
-    |> resolve_config(default)
+  defmacro __using__(_) do
+    quote do
+      @pool_name :redix_pool
+      @size Application.compile_env(:redix_pool, :pool_size, 10)
+      @max_overflow Application.compile_env(:redix_pool, :pool_max_overflow, 1)
+      @timeout Application.compile_env(:redix_pool, :timeout, 5000)
+      @redis_url Application.compile_env(:redix_pool, :redis_url, "redis://localhost:6379")
+    end
   end
-
-  @doc false
-  def resolve_config({:system, var_name}, default),
-    do: System.get_env(var_name) || default
-  def resolve_config(value, _default),
-    do: value
 end
